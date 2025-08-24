@@ -82,7 +82,7 @@ int main() {
 	camera.fovy = PERS_FOV;
 	camera.projection = CAMERA_PERSPECTIVE;
 
-	Vector3 cubePos = { 0, 0, 0 };
+	Vector3 cubePos = { 0, 2, 0 };
 
 	//Main Game Loop
 	while (!WindowShouldClose()) {
