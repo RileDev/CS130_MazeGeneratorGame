@@ -2,6 +2,7 @@
 #include "raymath.h"
 #include "rcamera.h"
 #include "Maze3D.cpp"
+#include "CountdownTimer.cpp"
 
 static const float PLAYER_EYE_HEIGHT = 1.7f;   
 static const float TOPDOWN_DISTANCE = 35.0f;  
@@ -113,6 +114,9 @@ int main() {
 
 	Vector3 cubePos = { 0, 2, 0 };
 
+	CountdownTimer timer(1, 0);
+	timer.start();
+
 	//Main Game Loop
 	while (!WindowShouldClose()) {
 		ToggleCamera();
@@ -136,6 +140,7 @@ int main() {
 				fpForward = { 0, 0, 1 };
 		}
 
+		timer.update();
 		SyncCameraToPlayer();
 		BeginDrawing();
 
@@ -147,6 +152,15 @@ int main() {
 				DrawPlayerInThirdPerson();
 				DrawGrid(1000, 1.0f);
 			EndMode3D();
+
+			if (timer.over()) {
+				DrawText("GAME OVER!", 100, 100, 50, RED);
+			}
+			
+			DrawRectangle(10, 10, 150, 60, Fade(SKYBLUE, 0.5f));
+			DrawRectangleLines(10, 10, 150, 60, BLUE);
+			DrawText("TIMER", 50, 15, 20, BLACK);
+			DrawText(timer.getFormatTime().c_str(), 55, 45, 24, timer.over() ? RED : BLACK);
 
 		EndDrawing();
 	}

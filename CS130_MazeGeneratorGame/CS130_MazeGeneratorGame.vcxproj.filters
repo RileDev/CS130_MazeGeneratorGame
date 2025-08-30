@@ -32,5 +32,8 @@
     <ClCompile Include="Maze3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CountdownTimer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
