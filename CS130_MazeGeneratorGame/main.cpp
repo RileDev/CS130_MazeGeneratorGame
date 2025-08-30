@@ -92,6 +92,15 @@ static Vector3 ResolveCollision(const Vector3& from, const Vector3& to, float r,
 	return from;
 }
 
+void checkForGameOver(CountdownTimer timer, int w, int h) {
+	if (timer.over()) {
+		DrawRectangle(w / 2 - 180, h / 2 - 60, 360, 60, Fade(BLACK, 0.5f));
+		DrawRectangleLines(w / 2 - 180, h / 2 - 60, 360, 60, RED);
+		DrawText("GAME OVER!", w / 2 - 160, h / 2 - 50, 50, RED);
+		EnableCursor();
+	}
+}
+
 
 int main() {
 	const int screenWidth = 800;
@@ -154,9 +163,7 @@ int main() {
 				//DrawGrid(1000, 1.0f);
 			EndMode3D();
 
-			if (timer.over()) {
-				DrawText("GAME OVER!", 100, 100, 50, RED);
-			}
+			checkForGameOver(timer, screenWidth, screenHeight);
 			
 			DrawRectangle(10, 10, 150, 60, Fade(SKYBLUE, 0.5f));
 			DrawRectangleLines(10, 10, 150, 60, BLUE);
