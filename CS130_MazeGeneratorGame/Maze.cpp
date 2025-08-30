@@ -7,7 +7,7 @@ class Maze {
 private:
 	int startPos = 0;
 	bool visited[SIZE * SIZE];
-	bool walls[SIZE * SIZE][2] = { 0 };
+	bool walls[SIZE * SIZE][2] = { 0 }; //cuva se desno i dole 
 
 	int index(int x, int y) const {
 		return y * SIZE + x;
@@ -27,19 +27,19 @@ protected:
 		int optionCount = 0;
 		int options[4];
 
-		// up
+		// gornja celija
 		if (pos >= SIZE && !visited[pos - SIZE]) {
 			options[optionCount++] = -SIZE;
 		}
-		// right
+		// desna celija
 		if ((pos + 1) % SIZE != 0 && !visited[pos + 1]) {
 			options[optionCount++] = 1;
 		}
-		// down
+		// donja celija
 		if (pos < SIZE * (SIZE - 1) && !visited[pos + SIZE]) {
 			options[optionCount++] = SIZE;
 		}
-		// left
+		// leva celija
 		if (pos % SIZE != 0 && !visited[pos - 1]) {
 			options[optionCount++] = -1;
 		}
