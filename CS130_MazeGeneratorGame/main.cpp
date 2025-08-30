@@ -1,15 +1,18 @@
 #include "raylib.h"
 #include "raymath.h"
 #include "rcamera.h"
+#include "Maze3D.cpp"
 
 static const float PLAYER_EYE_HEIGHT = 1.7f;   
 static const float TOPDOWN_DISTANCE = 35.0f;  
 static const float ORTHO_FOV = 20.0f;  
 static const float PERS_FOV = 60.0f;
 
+Maze3D maze = Maze3D(Maze());
+
 Camera camera;
 int cameraMode = CAMERA_FIRST_PERSON;
-Vector3 playerPos = { 0, 0, 0 };
+Vector3 playerPos = { -79, 0, -75 };
 Vector3 fpForward = { 0, 0, 1.0f };
 
 static inline Vector3 CameraForward(const Camera* c) {
@@ -31,6 +34,7 @@ void ToggleCamera() {
 
 			camera.position = { playerPos.x, playerPos.y + TOPDOWN_DISTANCE, playerPos.z };
 			camera.target = playerPos;
+			EnableCursor();
 		}
 		else if (cameraMode == CAMERA_THIRD_PERSON) {
 			cameraMode = CAMERA_FIRST_PERSON;
@@ -40,6 +44,7 @@ void ToggleCamera() {
 			camera.up = { 0.0f, 1.0f, 0.0f };
 			camera.position = { playerPos.x, playerPos.y + PLAYER_EYE_HEIGHT, playerPos.z };
 			camera.target = Vector3Add(camera.position, fpForward);
+			DisableCursor();
 		}
 	}
 }
@@ -67,11 +72,14 @@ void SyncCameraToPlayer() {
 	}
 }
 
+
 int main() {
 	const int screenWidth = 800;
 	const int screenHeight = 450;
 	InitWindow(screenWidth, screenHeight, "Maze Escape Game");
 	SetTargetFPS(60);
+
+	maze.build();
 
 	DisableCursor();
 
@@ -100,8 +108,8 @@ int main() {
 
 				ClearBackground(RAYWHITE);
 				BeginMode3D(camera);
-				DrawCube(cubePos, 2.0f, 4.0f, 2.0f, RED);
-				DrawCubeWires(cubePos, 2.0f, 4.0f, 2.0f, MAROON);
+				
+				maze.draw();
 
 				DrawPlayerInThirdPerson();
 				DrawGrid(100, 1.0f);

@@ -26,7 +26,10 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Cell.cpp">
+    <ClCompile Include="Maze.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Maze3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
