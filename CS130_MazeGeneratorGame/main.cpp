@@ -123,7 +123,7 @@ int main() {
 
 	Vector3 cubePos = { 0, 2, 0 };
 
-	CountdownTimer timer(1, 0);
+	CountdownTimer timer(2, 30);
 	timer.start();
 
 	//Main Game Loop
