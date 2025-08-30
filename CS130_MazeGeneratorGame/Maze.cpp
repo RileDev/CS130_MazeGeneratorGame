@@ -1,10 +1,11 @@
 #include <iostream>
 #include <vector>
 
-const int SIZE = 80;
+const int SIZE = 10;
 
 class Maze {
 private:
+	int startPos = 0;
 	bool visited[SIZE * SIZE];
 	bool walls[SIZE * SIZE][2] = { 0 };
 
@@ -22,24 +23,24 @@ private:
 
 
 protected:
-	int nextCell(int pos, int n) {
+	int nextCell(int pos) {
 		int optionCount = 0;
 		int options[4];
 
 		// up
-		if (pos >= n && !visited[pos - n]) {
-			options[optionCount++] = -n;
+		if (pos >= SIZE && !visited[pos - SIZE]) {
+			options[optionCount++] = -SIZE;
 		}
 		// right
-		if ((pos + 1) % n != 0 && !visited[pos + 1]) {
+		if ((pos + 1) % SIZE != 0 && !visited[pos + 1]) {
 			options[optionCount++] = 1;
 		}
 		// down
-		if (pos < n * (n - 1) && !visited[pos + n]) {
-			options[optionCount++] = n;
+		if (pos < SIZE * (SIZE - 1) && !visited[pos + SIZE]) {
+			options[optionCount++] = SIZE;
 		}
 		// left
-		if (pos % n != 0 && !visited[pos - 1]) {
+		if (pos % SIZE != 0 && !visited[pos - 1]) {
 			options[optionCount++] = -1;
 		}
 
@@ -78,7 +79,7 @@ protected:
 
 		while (!stack.empty()) {
 			int pos = stack.back();
-			int delta = nextCell(pos, SIZE);
+			int delta = nextCell(pos);
 			if (delta == 0) {
 				stack.pop_back();
 				continue;
@@ -92,7 +93,6 @@ protected:
 
 public:
 	void createMazeDfs() {
-		int pos = 0;
 
 		for (int i = 0; i < SIZE * SIZE; i++) {
 			visited[i] = false;
@@ -104,14 +104,37 @@ public:
 
 		std::srand(std::time(nullptr));
 
-		randomDfs(pos);
+		randomDfs(startPos);
 	}
 
-	bool isVisited(int index) const { return visited[index]; }
-	bool rightOpen(int index) const { return walls[index][0]; }
-	bool downOpen(int index) const { return walls[index][1]; }
+	bool isVisited(int index) const { 
+		return visited[index]; 
+	}
+	bool rightOpen(int index) const { 
+		return walls[index][0]; 
+	}
+	bool downOpen(int index) const { 
+		return walls[index][1]; 
+	}
 
-	bool rightOpen(int x, int y) const { return walls[index(x, y)][0]; }
-	bool downOpen(int x, int y) const { return walls[index(x, y)][1]; }
+	bool rightOpen(int x, int y) const { 
+		return walls[index(x, y)][0]; 
+	}
+	bool downOpen(int x, int y) const { 
+		return walls[index(x, y)][1]; 
+	}
+
+	int getStartPos() {
+		return this->startPos;
+	}
+
+	void setStartPos(int start) {
+		if (start < 0 || start >= SIZE * SIZE) {
+			this->startPos = 0;
+		}
+		else {
+			this->startPos = start;
+		}
+	}
 
 };

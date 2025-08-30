@@ -12,7 +12,7 @@ Maze3D maze = Maze3D(Maze());
 
 Camera camera;
 int cameraMode = CAMERA_FIRST_PERSON;
-Vector3 playerPos = { -79, 0, -75 };
+Vector3 playerPos = { -9, 0, -5 };
 Vector3 fpForward = { 0, 0, 1.0f };
 
 static inline Vector3 CameraForward(const Camera* c) {
@@ -72,6 +72,25 @@ void SyncCameraToPlayer() {
 	}
 }
 
+static bool CollidesAt(const Vector3& p, float r, const std::vector<BoundingBox>& boxes) {
+	for (const auto& b : boxes)
+		if (CheckCollisionBoxSphere(b, p, r)) return true;
+	return false;
+}
+
+static Vector3 ResolveCollision(const Vector3& from, const Vector3& to, float r,
+	const std::vector<BoundingBox>& boxes) {
+	if (!CollidesAt(to, r, boxes)) return to;
+
+	Vector3 tryX = { to.x, from.y, from.z };
+	if (!CollidesAt(tryX, r, boxes)) return tryX;
+
+	Vector3 tryZ = { from.x, from.y, to.z };
+	if (!CollidesAt(tryZ, r, boxes)) return tryZ;
+
+	return from;
+}
+
 
 int main() {
 	const int screenWidth = 800;
@@ -80,6 +99,8 @@ int main() {
 	SetTargetFPS(60);
 
 	maze.build();
+	const auto& worldBoxes = maze.colliders();
+	const float PLAYER_RADIUS = 0.35f;
 
 	DisableCursor();
 
@@ -97,7 +118,19 @@ int main() {
 		ToggleCamera();
 
 		if (cameraMode == CAMERA_FIRST_PERSON) {
+			Vector3 prev = camera.position;
+
 			UpdateCamera(&camera, CAMERA_FIRST_PERSON);
+			camera.position.y = playerPos.y + PLAYER_EYE_HEIGHT;
+
+			Vector3 corrected = ResolveCollision(prev, camera.position, PLAYER_RADIUS, worldBoxes);
+
+			if (corrected.x != camera.position.x || corrected.z != camera.position.z) {
+				Vector3 fwd = CameraForward(&camera);
+				camera.position = corrected;
+				camera.target = Vector3Add(corrected, fwd);
+			}
+
 			fpForward = CameraForward(&camera);
 			if (Vector3Length(fpForward) < 0.0001f)
 				fpForward = { 0, 0, 1 };
@@ -112,7 +145,7 @@ int main() {
 				maze.draw();
 
 				DrawPlayerInThirdPerson();
-				DrawGrid(100, 1.0f);
+				DrawGrid(1000, 1.0f);
 			EndMode3D();
 
 		EndDrawing();
