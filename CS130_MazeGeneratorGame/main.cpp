@@ -13,7 +13,7 @@ Maze3D maze = Maze3D(Maze());
 
 Camera camera;
 int cameraMode = CAMERA_FIRST_PERSON;
-Vector3 playerPos = { -9, 0, -5 };
+Vector3 playerPos = { -19, 0, -15 };
 Vector3 fpForward = { 0, 0, 1.0f };
 
 static inline Vector3 CameraForward(const Camera* c) {
@@ -144,13 +144,14 @@ int main() {
 		SyncCameraToPlayer();
 		BeginDrawing();
 
-				ClearBackground(RAYWHITE);
+				ClearBackground(SKYBLUE);
 				BeginMode3D(camera);
 				
 				maze.draw();
 
 				DrawPlayerInThirdPerson();
-				DrawGrid(1000, 1.0f);
+				DrawPlane({ 0, -0.5f, 0 }, {1000, 1000}, BEIGE);
+				//DrawGrid(1000, 1.0f);
 			EndMode3D();
 
 			if (timer.over()) {
@@ -165,6 +166,7 @@ int main() {
 		EndDrawing();
 	}
 
+	maze.unload();
 	CloseWindow();
 
 	return 0;

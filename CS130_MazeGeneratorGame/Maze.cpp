@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 
-const int SIZE = 10;
+const int SIZE = 20;
 
 class Maze {
 private:

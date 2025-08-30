@@ -15,6 +15,10 @@ private:
 	bool built = false;
 	std::vector<BoundingBox> boxes;
 
+	Texture2D brickTex{};
+	Model wallModel{};
+	bool texReady = false;
+
 	static BoundingBox MakeBox(Vector3 c, float sx, float sy, float sz) {
 		Vector3 h = { sx * 0.5f, sy * 0.5f, sz * 0.5f };
 		return { { c.x - h.x, c.y - h.y, c.z - h.z },
@@ -38,44 +42,50 @@ protected:
 		return ORIGIN.z + j * CELL;
 	}
 
+	void drawTexturedWall(const Vector3& center, float sx, float sy, float sz, Color fallbackFill = RED, Color fallbackWire = MAROON) {
+		if (texReady) {
+			DrawModelEx(wallModel, center, { 0, 1, 0 }, 0.0f, { sx, sy, sz }, WHITE);
+		}
+		else {
+			DrawCube(center, sx, sy, sz, fallbackFill);
+			DrawCubeWires(center, sx, sy, sz, fallbackWire);
+		}
+	}
+
 public:
 	Maze3D(Maze maze) : maze(maze) {}
 
-	void drawWallRightEdge(int i, int j, Color fill = RED, Color wire = MAROON) {
+	void drawWallRightEdge(int i, int j) {
 		Vector3 pos = { edgeX(i + 1), GROUND_Y + WALL_HEIGHT * 0.5f, centerZ(j) };
-		DrawCube(pos, WALL_THICK, WALL_HEIGHT, CELL, fill);    
-		DrawCubeWires(pos, WALL_THICK, WALL_HEIGHT, CELL, wire);
+		drawTexturedWall(pos, WALL_THICK, WALL_HEIGHT, CELL);
 	}
 
-	void drawWallBottomEdge(int i, int j, Color fill = RED, Color wire = MAROON) {
+	void drawWallBottomEdge(int i, int j) {
 		Vector3 pos = { centerX(i), GROUND_Y + WALL_HEIGHT * 0.5f, edgeZ(j + 1) };
-		DrawCube(pos, CELL, WALL_HEIGHT, WALL_THICK, fill); 
-		DrawCubeWires(pos, CELL, WALL_HEIGHT, WALL_THICK, wire);
+		drawTexturedWall(pos, CELL, WALL_HEIGHT, WALL_THICK);
 	}
 
-	void drawWallLeftBorder(int j, Color fill = RED, Color wire = MAROON) {
+	void drawWallLeftBorder(int j) {
 		Vector3 pos = { edgeX(0), GROUND_Y + WALL_HEIGHT * 0.5f, centerZ(j) };
-		DrawCube(pos, WALL_THICK, WALL_HEIGHT, CELL, fill);
-		DrawCubeWires(pos, WALL_THICK, WALL_HEIGHT, CELL, wire);
+		drawTexturedWall(pos, WALL_THICK, WALL_HEIGHT, CELL);
 	}
 
-	void drawWallTopBorder(int i, Color fill = RED, Color wire = MAROON) {
+	void drawWallTopBorder(int i) {
 		Vector3 pos = { centerX(i), GROUND_Y + WALL_HEIGHT * 0.5f, edgeZ(0) };
-		DrawCube(pos, CELL, WALL_HEIGHT, WALL_THICK, fill);
-		DrawCubeWires(pos, CELL, WALL_HEIGHT, WALL_THICK, wire);
+		drawTexturedWall(pos, CELL, WALL_HEIGHT, WALL_THICK);
 	}
 
-	void drawStartFloor(int i, Color fill = GREEN, Color wire = MAROON) {
+	void drawStartFloor(int i, Color fill = GREEN, Color wire = MAROON, float aspect = 0.75f) {
 		Vector3 pos = { centerX(i), GROUND_Y - FLOOR_THICK * 0.5f, centerZ(i) };
-		DrawCube(pos, CELL, FLOOR_THICK, CELL, fill); 
-		DrawCubeWires(pos, CELL, FLOOR_THICK, CELL, wire);
+		DrawCube(pos, CELL * aspect, FLOOR_THICK, CELL * aspect, fill);
+		DrawCubeWires(pos, CELL * aspect, FLOOR_THICK, CELL * aspect, wire);
 	}
 
-	void drawEndFloor(Color fill = PURPLE, Color wire = MAROON) {
+	void drawEndFloor(Color fill = PURPLE, Color wire = MAROON, float aspect = 0.75f) {
 		int x = SIZE - 1, y = SIZE - 1;
-		Vector3 pos = { centerX(x), GROUND_Y - FLOOR_THICK * 0.5f, centerZ(y) };
-		DrawCube(pos, CELL, FLOOR_THICK, CELL, fill);
-		DrawCubeWires(pos, CELL, FLOOR_THICK, CELL, wire);
+		Vector3 pos = { centerX(x), (GROUND_Y - FLOOR_THICK * 0.5f), centerZ(y) };
+		DrawCube(pos, CELL * aspect, FLOOR_THICK, CELL * aspect, fill);
+		DrawCubeWires(pos, CELL * aspect, FLOOR_THICK, CELL * aspect, wire);
 	}
 
 
@@ -83,6 +93,22 @@ public:
 	void build() {
 		if (this->built) return;
 		maze.createMazeDfs();
+
+		brickTex = LoadTexture("brick.jpg");
+
+		if (brickTex.id != 0) {
+			GenTextureMipmaps(&brickTex);
+			SetTextureFilter(brickTex, TEXTURE_FILTER_BILINEAR);
+
+			Mesh cube = GenMeshCube(1.0f, 1.0f, 1.0f);
+			wallModel = LoadModelFromMesh(cube);
+			wallModel.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = brickTex;
+			texReady = true;
+		}
+		else {
+			texReady = false;
+		}
+
 		boxes.clear();
 		boxes.reserve(SIZE * SIZE * 2 + SIZE * 2); 
 
@@ -109,6 +135,14 @@ public:
 		}
 
 		built = true;
+	}
+
+	void unload() {
+		if (texReady) {
+			UnloadModel(wallModel);
+			UnloadTexture(brickTex);
+			texReady = false;
+		}
 	}
 
 	const std::vector<BoundingBox>& colliders() const 
