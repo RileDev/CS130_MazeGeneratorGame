@@ -3,6 +3,7 @@
 #include "include/rcamera.h"
 #include "Maze3D.cpp"
 #include "CountdownTimer.cpp"
+#include "Cat.cpp"
 
 static const float PLAYER_EYE_HEIGHT = 1.7f;   
 static const float TOPDOWN_DISTANCE = 35.0f;  
@@ -10,6 +11,7 @@ static const float ORTHO_FOV = 20.0f;
 static const float PERS_FOV = 60.0f;
 
 Maze3D maze = Maze3D(Maze());
+CountdownTimer timer(0, 3);
 Texture2D arrow;
 
 Camera camera;
@@ -119,14 +121,23 @@ void checkForGameOver(CountdownTimer timer) {
 		DrawRectangleLines(GetScreenWidth() / 2 - 180, GetScreenHeight() / 2 - 60, 360, 60, RED);
 		DrawText("GAME OVER!", GetScreenWidth() / 2 - 160, GetScreenHeight() / 2 - 50, 50, RED);
 		paused = true;
+		timer.stop();
 	}
 }
 
-void RestartGame(CountdownTimer timer) {
-	maze.unload();
-	maze.build();
-	paused = false;
-	timer = timer;
+void RestartGame(Cat cat) {
+	maze.rebuild();
+
+	fpForward = { 0, 0, 1.0f };
+	playerPos = { -19, 0, -15 };
+	int cameraMode = CAMERA_FIRST_PERSON;
+	camera.position = { playerPos.x, playerPos.y + PLAYER_EYE_HEIGHT, playerPos.z - 4.0f };
+	camera.target = { playerPos.x, playerPos.y + PLAYER_EYE_HEIGHT, playerPos.z };
+
+	timer.reset(2, 30);
+	timer.start();
+
+	cat.Reset({ SIZE - 1, 1, SIZE - 1 }, 1.0f);
 }
 
 
@@ -137,7 +148,8 @@ int main() {
 	SetTargetFPS(60);
 
 	maze.build();
-	arrow = LoadTexture("arrow.png");
+	Cat cat = Cat("./assets/models/scene.gltf", { SIZE - 1, 1, SIZE - 1 }, 1.0f, 0.0f);
+	arrow = LoadTexture("./assets/textures/arrow.png");
 	const auto& worldBoxes = maze.colliders();
 	const float PLAYER_RADIUS = 0.35f;
 
@@ -150,7 +162,6 @@ int main() {
 	camera.fovy = PERS_FOV;
 	camera.projection = CAMERA_PERSPECTIVE;
 
-	CountdownTimer timer(2, 30);
 	timer.start();
 
 	//Main Game Loop
@@ -179,14 +190,14 @@ int main() {
 			}
 			else {
 				if (IsKeyPressed(KEY_SPACE)) {
-					//RestartGame(timer); 
+					RestartGame(cat); 
 					//Game resets here
 				}
 			}
 			
 		}
 		
-
+		cat.Update(GetFrameTime());
 		timer.update();
 		SyncCameraToPlayer();
 		BeginDrawing();
@@ -195,6 +206,7 @@ int main() {
 				BeginMode3D(camera);
 
 				maze.draw();
+				cat.DrawCat();
 
 				DrawPlayerInThirdPerson();
 				DrawPlane({ 0, -0.5f, 0 }, {1000, 1000}, BEIGE);
@@ -211,6 +223,7 @@ int main() {
 		EndDrawing();
 	}
 
+	//cat.UnloadCat();
 	maze.unload();
 	CloseWindow();
 

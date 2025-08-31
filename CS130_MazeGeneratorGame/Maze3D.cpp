@@ -52,6 +52,33 @@ protected:
 		}
 	}
 
+	void createCollision() {
+		boxes.clear();
+		boxes.reserve(SIZE * SIZE * 2 + SIZE * 2);
+
+		for (int j = 0; j < SIZE; ++j) {
+			Vector3 c = { edgeX(0), GROUND_Y + WALL_HEIGHT * 0.5f, centerZ(j) };
+			boxes.push_back(MakeBox(c, WALL_THICK, WALL_HEIGHT, CELL));
+		}
+		for (int i = 0; i < SIZE; ++i) {
+			Vector3 c = { centerX(i), GROUND_Y + WALL_HEIGHT * 0.5f, edgeZ(0) };
+			boxes.push_back(MakeBox(c, CELL, WALL_HEIGHT, WALL_THICK));
+		}
+
+		for (int j = 0; j < SIZE; ++j) {
+			for (int i = 0; i < SIZE; ++i) {
+				if (i == SIZE - 1 || !maze.rightOpen(i, j)) {
+					Vector3 c = { edgeX(i + 1), GROUND_Y + WALL_HEIGHT * 0.5f, centerZ(j) };
+					boxes.push_back(MakeBox(c, WALL_THICK, WALL_HEIGHT, CELL));
+				}
+				if (j == SIZE - 1 || !maze.downOpen(i, j)) {
+					Vector3 c = { centerX(i), GROUND_Y + WALL_HEIGHT * 0.5f, edgeZ(j + 1) };
+					boxes.push_back(MakeBox(c, CELL, WALL_HEIGHT, WALL_THICK));
+				}
+			}
+		}
+	}
+
 public:
 	Maze3D(Maze maze) : maze(maze) {}
 
@@ -89,12 +116,11 @@ public:
 	}
 
 
-
 	void build() {
 		if (this->built) return;
 		maze.createMazeDfs();
 
-		brickTex = LoadTexture("brick.jpg");
+		brickTex = LoadTexture("./assets/textures/brick.jpg");
 
 		if (brickTex.id != 0) {
 			GenTextureMipmaps(&brickTex);
@@ -109,32 +135,18 @@ public:
 			texReady = false;
 		}
 
-		boxes.clear();
-		boxes.reserve(SIZE * SIZE * 2 + SIZE * 2); 
-
-		for (int j = 0; j < SIZE; ++j) {
-			Vector3 c = { edgeX(0), GROUND_Y + WALL_HEIGHT * 0.5f, centerZ(j) };
-			boxes.push_back(MakeBox(c, WALL_THICK, WALL_HEIGHT, CELL));
-		}
-		for (int i = 0; i < SIZE; ++i) {
-			Vector3 c = { centerX(i), GROUND_Y + WALL_HEIGHT * 0.5f, edgeZ(0) };
-			boxes.push_back(MakeBox(c, CELL, WALL_HEIGHT, WALL_THICK));
-		}
-
-		for (int j = 0; j < SIZE; ++j) {
-			for (int i = 0; i < SIZE; ++i) {
-				if (i == SIZE - 1 || !maze.rightOpen(i, j)) {
-					Vector3 c = { edgeX(i + 1), GROUND_Y + WALL_HEIGHT * 0.5f, centerZ(j) };
-					boxes.push_back(MakeBox(c, WALL_THICK, WALL_HEIGHT, CELL));
-				}
-				if (j == SIZE - 1 || !maze.downOpen(i, j)) {
-					Vector3 c = { centerX(i), GROUND_Y + WALL_HEIGHT * 0.5f, edgeZ(j + 1) };
-					boxes.push_back(MakeBox(c, CELL, WALL_HEIGHT, WALL_THICK));
-				}
-			}
-		}
+		createCollision();
 
 		built = true;
+	}
+
+	void rebuild() {
+		if (!this->built) {
+			build();
+			return;
+		}
+		maze.createMazeDfs();
+		createCollision();
 	}
 
 	void unload() {

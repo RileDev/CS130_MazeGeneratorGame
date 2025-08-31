@@ -36,6 +36,10 @@ public:
 		lastTick = std::chrono::steady_clock::now();
 	}
 
+	void reset(int m, int s) { 
+		set(m, s); 
+	}
+
 	void update() {
 		if (!isRunning || isOver) return;
 
@@ -56,10 +60,32 @@ public:
 		}
 	}
 
-	void stop() { isRunning = false; }
+	void stop() { 
+		isRunning = false; 
+	}
 
-	bool over() const { return isOver; }
-	bool running() const { return isRunning; }
+	void set(int m, int s) {
+		if (m <= 0)
+			this->minutes = 0;
+		if (s <= 0)
+			this->seconds = 0;
+
+		if (m >= 60)
+			this->minutes = 59;
+		if (s >= 60)
+			this->seconds = 50;
+
+		this->minutes = m;
+		this->seconds = s;
+	}
+
+	bool over() const { 
+		return isOver; 
+	}
+
+	bool running() const { 
+		return isRunning; 
+	}
 
 	string getFormatTime() const {
 		ostringstream oss;
