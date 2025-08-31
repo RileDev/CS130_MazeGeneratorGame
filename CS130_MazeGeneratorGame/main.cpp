@@ -10,6 +10,7 @@ static const float ORTHO_FOV = 20.0f;
 static const float PERS_FOV = 60.0f;
 
 Maze3D maze = Maze3D(Maze());
+Texture2D arrow;
 
 Camera camera;
 int cameraMode = CAMERA_FIRST_PERSON;
@@ -55,6 +56,23 @@ void DrawPlayerInThirdPerson() {
 	{
 		DrawSphere(playerPos, 0.3f, PURPLE);
 		DrawSphereWires(playerPos, 0.3f, 8, 8, DARKPURPLE);
+	}
+}
+
+void DrawPlayerArrow2D() {
+	if (cameraMode == CAMERA_THIRD_PERSON) {
+		Vector2 p2 = GetWorldToScreen({ playerPos.x, playerPos.y, playerPos.z }, camera);
+
+		float scale = 1.0f;
+		float w = arrow.width * scale;
+		float h = arrow.height * scale;
+
+		float angle = RAD2DEG * atan2f(fpForward.z, fpForward.x) - 90.0f;
+
+		Rectangle src = { 0, 0, (float)arrow.width, (float)arrow.height };
+		Rectangle dest = { roundf(p2.x), roundf(p2.y), w, h };
+		Vector2 origin = { w * 0.5f, h * 0.5f };
+		DrawTexturePro(arrow, src, dest, origin, angle, WHITE);
 	}
 }
 
@@ -109,6 +127,7 @@ int main() {
 	SetTargetFPS(60);
 
 	maze.build();
+	arrow = LoadTexture("arrow.png");
 	const auto& worldBoxes = maze.colliders();
 	const float PLAYER_RADIUS = 0.35f;
 
@@ -163,6 +182,7 @@ int main() {
 				//DrawGrid(1000, 1.0f);
 			EndMode3D();
 
+			DrawPlayerArrow2D();
 			checkForGameOver(timer, screenWidth, screenHeight);
 			
 			DrawRectangle(10, 10, 150, 60, Fade(SKYBLUE, 0.5f));
