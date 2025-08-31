@@ -14,8 +14,11 @@ Texture2D arrow;
 
 Camera camera;
 int cameraMode = CAMERA_FIRST_PERSON;
+
 Vector3 playerPos = { -19, 0, -15 };
 Vector3 fpForward = { 0, 0, 1.0f };
+
+bool paused = false;
 
 static inline Vector3 CameraForward(const Camera* c) {
 	return Vector3Normalize(Vector3Subtract(c->target, c->position));
@@ -110,13 +113,20 @@ static Vector3 ResolveCollision(const Vector3& from, const Vector3& to, float r,
 	return from;
 }
 
-void checkForGameOver(CountdownTimer timer, int w, int h) {
+void checkForGameOver(CountdownTimer timer) {
 	if (timer.over()) {
-		DrawRectangle(w / 2 - 180, h / 2 - 60, 360, 60, Fade(BLACK, 0.5f));
-		DrawRectangleLines(w / 2 - 180, h / 2 - 60, 360, 60, RED);
-		DrawText("GAME OVER!", w / 2 - 160, h / 2 - 50, 50, RED);
-		EnableCursor();
+		DrawRectangle(GetScreenWidth() / 2 - 180, GetScreenHeight() / 2 - 60, 360, 60, Fade(BLACK, 0.5f));
+		DrawRectangleLines(GetScreenWidth() / 2 - 180, GetScreenHeight() / 2 - 60, 360, 60, RED);
+		DrawText("GAME OVER!", GetScreenWidth() / 2 - 160, GetScreenHeight() / 2 - 50, 50, RED);
+		paused = true;
 	}
+}
+
+void RestartGame(CountdownTimer timer) {
+	maze.unload();
+	maze.build();
+	paused = false;
+	timer = timer;
 }
 
 
@@ -140,9 +150,7 @@ int main() {
 	camera.fovy = PERS_FOV;
 	camera.projection = CAMERA_PERSPECTIVE;
 
-	Vector3 cubePos = { 0, 2, 0 };
-
-	CountdownTimer timer(2, 30);
+	CountdownTimer timer(0, 3);
 	timer.start();
 
 	//Main Game Loop
@@ -150,23 +158,34 @@ int main() {
 		ToggleCamera();
 
 		if (cameraMode == CAMERA_FIRST_PERSON) {
-			Vector3 prev = camera.position;
+			if (!paused) {
+				Vector3 prev = camera.position;
 
-			UpdateCamera(&camera, CAMERA_FIRST_PERSON);
-			camera.position.y = playerPos.y + PLAYER_EYE_HEIGHT;
+				UpdateCamera(&camera, CAMERA_FIRST_PERSON);
 
-			Vector3 corrected = ResolveCollision(prev, camera.position, PLAYER_RADIUS, worldBoxes);
+				camera.position.y = playerPos.y + PLAYER_EYE_HEIGHT;
 
-			if (corrected.x != camera.position.x || corrected.z != camera.position.z) {
-				Vector3 fwd = CameraForward(&camera);
-				camera.position = corrected;
-				camera.target = Vector3Add(corrected, fwd);
+				Vector3 corrected = ResolveCollision(prev, camera.position, PLAYER_RADIUS, worldBoxes);
+
+				if (corrected.x != camera.position.x || corrected.z != camera.position.z) {
+					Vector3 fwd = CameraForward(&camera);
+					camera.position = corrected;
+					camera.target = Vector3Add(corrected, fwd);
+				}
+
+				fpForward = CameraForward(&camera);
+				if (Vector3Length(fpForward) < 0.0001f)
+					fpForward = { 0, 0, 1 };
 			}
-
-			fpForward = CameraForward(&camera);
-			if (Vector3Length(fpForward) < 0.0001f)
-				fpForward = { 0, 0, 1 };
+			else {
+				if (IsKeyPressed(KEY_SPACE)) {
+					//RestartGame(timer); 
+					//Game resets here
+				}
+			}
+			
 		}
+		
 
 		timer.update();
 		SyncCameraToPlayer();
@@ -174,16 +193,15 @@ int main() {
 
 				ClearBackground(SKYBLUE);
 				BeginMode3D(camera);
-				
+
 				maze.draw();
 
 				DrawPlayerInThirdPerson();
 				DrawPlane({ 0, -0.5f, 0 }, {1000, 1000}, BEIGE);
-				//DrawGrid(1000, 1.0f);
 			EndMode3D();
 
 			DrawPlayerArrow2D();
-			checkForGameOver(timer, screenWidth, screenHeight);
+			checkForGameOver(timer);
 			
 			DrawRectangle(10, 10, 150, 60, Fade(SKYBLUE, 0.5f));
 			DrawRectangleLines(10, 10, 150, 60, BLUE);

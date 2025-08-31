@@ -126,6 +126,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\..\raylib\raylib\src\raylib.h" />
+    <ClInclude Include="..\..\..\..\..\..\raylib\raylib\src\raymath.h" />
     <ClInclude Include="..\..\..\..\..\..\raylib\raylib\src\rcamera.h" />
   </ItemGroup>
   <ItemGroup>
