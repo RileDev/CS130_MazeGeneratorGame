@@ -1,6 +1,6 @@
-#include "raylib.h"
-#include "raymath.h"
-#include "rcamera.h"
+#include "include/raylib.h"
+#include "include/raymath.h"
+#include "include/rcamera.h"
 #include "Maze3D.cpp"
 #include "CountdownTimer.cpp"
 
@@ -32,7 +32,7 @@ void ToggleCamera() {
 				fpForward = { 0, 0, 1 };
 
 			cameraMode = CAMERA_THIRD_PERSON;
-
+			
 			camera.projection = CAMERA_ORTHOGRAPHIC;
 			camera.fovy = ORTHO_FOV;
 			camera.up = { 0.0f, 0.0f, -1.0f };
@@ -150,7 +150,7 @@ int main() {
 	camera.fovy = PERS_FOV;
 	camera.projection = CAMERA_PERSPECTIVE;
 
-	CountdownTimer timer(0, 3);
+	CountdownTimer timer(2, 30);
 	timer.start();
 
 	//Main Game Loop

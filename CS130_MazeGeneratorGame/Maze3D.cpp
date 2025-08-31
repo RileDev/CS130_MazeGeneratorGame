@@ -1,5 +1,5 @@
-#include "raylib.h"
-#include "raymath.h"
+#include "include/raylib.h"
+#include "include/raymath.h"
 #include "Maze.cpp"
 
 const float CELL = 2.0f;
