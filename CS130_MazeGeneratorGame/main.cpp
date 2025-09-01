@@ -11,7 +11,7 @@ static const float ORTHO_FOV = 20.0f;
 static const float PERS_FOV = 60.0f;
 
 Maze3D maze = Maze3D(Maze());
-CountdownTimer timer(0, 3);
+CountdownTimer timer(2, 30);
 Texture2D arrow;
 
 Camera camera;
