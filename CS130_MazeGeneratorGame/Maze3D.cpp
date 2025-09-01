@@ -81,6 +81,8 @@ protected:
 
 public:
 	Maze3D(Maze maze) : maze(maze) {}
+	Maze3D(const Maze3D&) = delete;
+	Maze3D& operator=(const Maze3D&) = delete;
 
 	void drawWallRightEdge(int i, int j) {
 		Vector3 pos = { edgeX(i + 1), GROUND_Y + WALL_HEIGHT * 0.5f, centerZ(j) };

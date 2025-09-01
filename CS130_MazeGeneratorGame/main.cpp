@@ -115,17 +115,23 @@ static Vector3 ResolveCollision(const Vector3& from, const Vector3& to, float r,
 	return from;
 }
 
-void checkForGameOver(CountdownTimer timer) {
+void DisplayStatusMessage(string text, Color colorPrimary, Color colorSecondary = BLACK, string inputKeyText = "SPACE") {
+	string inputMsg = "Press '" + inputKeyText + "' key to restart the game";
+	DrawRectangle(GetScreenWidth() / 2 - 180, GetScreenHeight() / 2 - 60, 360, 60, Fade(colorSecondary, 0.5f));
+	DrawRectangleLines(GetScreenWidth() / 2 - 180, GetScreenHeight() / 2 - 60, 360, 60, colorPrimary);
+	DrawText(text.c_str(), GetScreenWidth() / 2 - 160, GetScreenHeight() / 2 - 50, 50, colorPrimary);
+	DrawText(inputMsg.c_str(), GetScreenWidth() / 2 - 200, GetScreenHeight() / 2 + 30, 20, WHITE);
+}
+
+void CheckForGameOver(CountdownTimer timer) {
 	if (timer.over()) {
-		DrawRectangle(GetScreenWidth() / 2 - 180, GetScreenHeight() / 2 - 60, 360, 60, Fade(BLACK, 0.5f));
-		DrawRectangleLines(GetScreenWidth() / 2 - 180, GetScreenHeight() / 2 - 60, 360, 60, RED);
-		DrawText("GAME OVER!", GetScreenWidth() / 2 - 160, GetScreenHeight() / 2 - 50, 50, RED);
+		DisplayStatusMessage("GAME OVER!", RED, BLACK);
 		paused = true;
 		timer.stop();
 	}
 }
 
-void RestartGame(Cat cat) {
+void RestartGame() {
 	maze.rebuild();
 
 	fpForward = { 0, 0, 1.0f };
@@ -137,7 +143,13 @@ void RestartGame(Cat cat) {
 	timer.reset(2, 30);
 	timer.start();
 
-	cat.Reset({ SIZE - 1, 1, SIZE - 1 }, 1.0f);
+	paused = false;
+}
+
+void Win() {
+	paused = true;
+	timer.stop();
+	DisplayStatusMessage("MAZE WON!", GREEN);
 }
 
 
@@ -190,14 +202,14 @@ int main() {
 			}
 			else {
 				if (IsKeyPressed(KEY_SPACE)) {
-					RestartGame(cat); 
-					//Game resets here
+					RestartGame(); 
 				}
 			}
 			
 		}
 		
 		cat.Update(GetFrameTime());
+
 		timer.update();
 		SyncCameraToPlayer();
 		BeginDrawing();
@@ -213,7 +225,10 @@ int main() {
 			EndMode3D();
 
 			DrawPlayerArrow2D();
-			checkForGameOver(timer);
+			CheckForGameOver(timer);
+			if (cat.IsColliding(playerPos, PLAYER_RADIUS)) {
+				Win();
+			}
 			
 			DrawRectangle(10, 10, 150, 60, Fade(SKYBLUE, 0.5f));
 			DrawRectangleLines(10, 10, 150, 60, BLUE);

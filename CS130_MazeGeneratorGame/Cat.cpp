@@ -15,6 +15,9 @@ private:
 	float bobAmp = .5f;   
 	float bobHz = .5f;  
 	float t = 0.0f;
+
+	float baseRadiusXZ = 0.5f;
+
 public:
 	Cat(const char* modelPath = "./assets/models/scene.gltf",
 		Vector3 pos = { 0, 1, 0 },
@@ -24,8 +27,18 @@ public:
 	{
 		model = LoadModel(modelPath);
 		loaded = (model.meshCount > 0);
+
+		if (loaded) {
+			BoundingBox bb = GetModelBoundingBox(model);
+			float rx = (bb.max.x - bb.min.x) * 0.5f;
+			float rz = (bb.max.z - bb.min.z) * 0.5f;
+			baseRadiusXZ = sqrt(rx * rx + rz * rz);
+		}
 		
 	}
+
+	Cat(const Cat&) = delete;
+	Cat& operator=(const Cat&) = delete;
 
 	void DrawCat(Color tint = WHITE) const {
 		if (!loaded) return;
@@ -40,10 +53,15 @@ public:
 		pos.y = (basePos.y + std::sinf(t * 2.0f * PI * bobHz) * bobAmp) - .25f;
 	}
 
-	void Reset(Vector3 p, float yawDeg = 0.0f) {
-		pos = basePos = p;
-		yaw = yawDeg;
-		t = 0.0f;
+	bool IsColliding(Vector3& playerPosition, float playerRadius, float inflate = 0.0) const {
+		if (!loaded) return false;
+		float dx = playerPosition.x - pos.x;
+		float dz = playerPosition.z - pos.z;
+		float dist2 = dx * dx + dz * dz;
+
+		float catRadius = baseRadiusXZ * scale;
+		float sum = playerRadius + catRadius + inflate;
+		return dist2 <= (sum * sum);
 	}
 
 	~Cat(){
