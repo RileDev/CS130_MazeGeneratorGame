@@ -154,6 +154,10 @@ int yOf(int i)            { return i / SIZE; }
 * `raylib` installed (or vendored)
 * C++17 or later (tested with `g++`/`clang++`)
 
+**Windows (Visual Studio 2022)**
+
+* Open the provided `.sln` in **Visual Studio 2022** and build (x64 Debug/Release). Configure `raylib` include/lib paths if needed (Project → Properties → C/C++ and Linker).
+
 **Windows (MinGW/MSYS2)**
 
 ```bash
