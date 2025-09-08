@@ -97,3 +97,41 @@ int yOf(int i)            { return i / SIZE; }
   - **No recursion** → avoids stack-overflow for larger grids.
   - **Determinism:** use a fixed seed if you need reproducible mazes.
   - External readers (`rightOpen/downOpen` by index or `(x,y)`) expose connectivity to the renderer and collision system.
+
+---
+
+# Rendering with raylib
+
+## Coordinates & sizing
+
+- Tunables: `CELL`, `WALL_THICK`, `WALL_HEIGHT`, `FLOOR_THICK`, `GROUND_Y`
+- `ORIGIN` centers the maze around world `(0,0,0)`
+
+## Helpers
+
+- `centerX(i)` / `centerZ(j)` → world-space cell centers  
+- `edgeX(i)` / `edgeZ(j)` → seam/edge positions for precise wall placement
+
+## Walls
+
+- **Textured path:** pre-load one cube mesh → model, assign a brick texture; draw via `DrawModelEx` with per-instance scaling (`sx`, `sy`, `sz`).  
+- **Fallback:** if texture/model not ready, draw via `DrawCube` + `DrawCubeWires` (keeps visuals legible even without assets).
+
+## Lifecycle
+
+- `build()` → generate maze, load texture, generate model, build AABB collisions, set `built = true`.  
+- `rebuild()` → regenerate maze & collisions **without** reloading assets (fast restart).  
+- `unload()` → free model/texture and reset flags.
+
+## Start/Goal tiles
+
+- Thin colored plates: **Start** (GREEN) at `startPos`, **Goal** (PURPLE) at `(SIZE - 1, SIZE - 1)`.
+
+## Draw order
+
+1. Start tile  
+2. Outer **left** and **top** borders (always present)  
+3. Interior walls: for each cell → draw **right** wall if edge or `!rightOpen`; draw **bottom** wall if edge or `!downOpen`  
+4. Goal tile
+
+---
