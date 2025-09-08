@@ -82,18 +82,18 @@ int yOf(int i)            { return i / SIZE; }
 **Core idea:** iterative DFS with an explicit `std::vector<int> stack`.
 1. **nextCell(pos)** — collect valid, unvisited neighbors (up/right/down/left), choose one uniformly at random; return a delta in `{−SIZE, +1, +SIZE, −1}` or `0` if none.
 2. **connect(pos1, pos2)** — open the wall between two adjacent cells by setting one of `walls[][0/1]` according to relative position:
-  - `pos2 == pos1 + 1` → open **right** at `pos1`
-  - `pos2 == pos1 − 1` → open **right at left neighbor**
-  - `pos2 == pos1 + SIZE` → open **down** at `pos1`
-  - `pos2 == pos1 − SIZE` → open **down at upper neighbor**
+    - `pos2 == pos1 + 1` → open **right** at `pos1`
+    - `pos2 == pos1 − 1` → open **right at left neighbor**
+    - `pos2 == pos1 + SIZE` → open **down** at `pos1`
+    - `pos2 == pos1 − SIZE` → open **down at upper neighbor**
 3. **randomDfs(start)** — push `start`; while stack not empty:
-  - peek `pos`
-  - `delta = nextCell(pos)`
-  - if `delta == 0` → backtrack (`pop_back`)
-  - else `next = pos + delta`; **connect(pos,next);** mark visited; `push_back(next)`
+    - peek `pos`
+    - `delta = nextCell(pos)`
+    - if `delta == 0` → backtrack (`pop_back`)
+    - else `next = pos + delta`; **connect(pos,next);** mark visited; `push_back(next)`
 4. **createMazeDfs()** — reset `visited` and `walls` to false, `std::srand(std::time(nullptr))`, then `randomDfs(startPos)`.
 
 **Design notes**
-- **No recursion** → avoids stack-overflow for larger grids.
-- **Determinism:** use a fixed seed if you need reproducible mazes.
-- External readers (`rightOpen/downOpen` by index or `(x,y)`) expose connectivity to the renderer and collision system.
+  - **No recursion** → avoids stack-overflow for larger grids.
+  - **Determinism:** use a fixed seed if you need reproducible mazes.
+  - External readers (`rightOpen/downOpen` by index or `(x,y)`) expose connectivity to the renderer and collision system.
