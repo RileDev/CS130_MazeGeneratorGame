@@ -100,38 +100,45 @@ int yOf(int i)            { return i / SIZE; }
 
 ---
 
-# Rendering with raylib
+## Rendering with Raylib
 
-## Coordinates & sizing
+**Coordinates & sizing**
 
-- Tunables: `CELL`, `WALL_THICK`, `WALL_HEIGHT`, `FLOOR_THICK`, `GROUND_Y`
-- `ORIGIN` centers the maze around world `(0,0,0)`
+* Tunables: `CELL`, `WALL_THICK`, `WALL_HEIGHT`, `FLOOR_THICK`, `GROUND_Y`
+* `ORIGIN` centers the maze around world `(0,0,0)`
 
-## Helpers
+**Helpers**
 
-- `centerX(i)` / `centerZ(j)` → world-space cell centers  
-- `edgeX(i)` / `edgeZ(j)` → seam/edge positions for precise wall placement
+* `centerX(i)` / `centerZ(j)` → world-space cell centers
+* `edgeX(i)` / `edgeZ(j)` → seam/edge positions for precise wall placement
 
-## Walls
+**Walls**
 
-- **Textured path:** pre-load one cube mesh → model, assign a brick texture; draw via `DrawModelEx` with per-instance scaling (`sx`, `sy`, `sz`).  
-- **Fallback:** if texture/model not ready, draw via `DrawCube` + `DrawCubeWires` (keeps visuals legible even without assets).
+* **Textured path:** pre-load one cube mesh → model, assign a brick texture; draw via `DrawModelEx` with per-instance scaling (`sx`, `sy`, `sz`).
+* **Fallback:** if texture/model not ready, draw via `DrawCube` + `DrawCubeWires` (keeps visuals legible even without assets).
 
-## Lifecycle
+**Lifecycle**
 
-- `build()` → generate maze, load texture, generate model, build AABB collisions, set `built = true`.  
-- `rebuild()` → regenerate maze & collisions **without** reloading assets (fast restart).  
-- `unload()` → free model/texture and reset flags.
+* `build()` → generate maze, load texture, generate model, build AABB collisions, set `built=true`.
+* `rebuild()` → regenerate maze & collisions without reloading assets (fast restart).
+* `unload()` → free model/texture and reset flags.
 
-## Start/Goal tiles
+**Start/Goal tiles**
 
-- Thin colored plates: **Start** (GREEN) at `startPos`, **Goal** (PURPLE) at `(SIZE - 1, SIZE - 1)`.
+* Thin colored plates: **Start** (GREEN) at `startPos`, **Goal** (PURPLE) at `(SIZE-1, SIZE-1)`.
 
-## Draw order
+**Draw order**
 
-1. Start tile  
-2. Outer **left** and **top** borders (always present)  
-3. Interior walls: for each cell → draw **right** wall if edge or `!rightOpen`; draw **bottom** wall if edge or `!downOpen`  
+1. Start tile
+2. Outer **left** and **top** borders (always present)
+3. Interior walls: for each cell → draw **right** wall if edge or `!rightOpen`; draw **bottom** wall if edge or `!downOpen`
 4. Goal tile
 
----
+**Collisions (AABB)**
+
+* Precompute a `std::vector<BoundingBox>` aligned **1:1** with visible walls.
+* Always add the **outer left/top** frame; then, for each cell:
+
+  * add **right** wall collider if on the outer edge or `!rightOpen(i, j)`
+  * add **bottom** wall collider if on the outer edge or `!downOpen(i, j)`
+* Expose via `colliders()` so the player controller / AI / physics can use the same authoritative wall set as the renderer.
