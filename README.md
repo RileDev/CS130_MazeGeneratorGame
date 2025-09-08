@@ -55,3 +55,12 @@ A fast, minimal **C++/raylib** project that generates a **perfect maze** using a
 -Drawback: tends to make long corridors with fewer junctions; that can be desirable for time-challenge gameplay.
 
 Other options you can explore later: Prim, Kruskal, Wilson, Aldous–Broder, Eller, Sidewinder — each yields a distinct “feel”.
+
+---
+## Maze Representation
+- `SIZE = 20` → grid is `SIZE × SIZE` (e.g., 20×20).
+- `visited[SIZE*SIZE] : bool` → flat, linear indices `0 … SIZE*SIZE-1`.
+- `walls[SIZE*SIZE][2] : bool` → store **only two openings per cell**:
+-- `walls[i][0]` → opening to the right of cell `i`
+-- `walls[i][1]` → opening down from cell `i`
+-- Left/up openings are **implicit** from neighbors (saves memory and avoids duplication).
