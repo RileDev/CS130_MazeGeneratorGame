@@ -77,6 +77,8 @@ int yOf(int i)            { return i / SIZE; }
 
 `startPos = 0` (top-left). A setter validates input range and falls back to `0` if out of bounds.
 
+---
+
 ## DFS Implementation
 
 **Core idea:** iterative DFS with an explicit `std::vector<int> stack`.
