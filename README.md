@@ -64,3 +64,15 @@ Other options you can explore later: Prim, Kruskal, Wilson, Aldous–Broder, Ell
   - `walls[i][0]` → opening to the right of cell `i`
   - `walls[i][1]` → opening down from cell `i`
   - Left/up openings are **implicit** from neighbors (saves memory and avoids duplication).
+
+**Index helpers**
+
+```cpp
+int index(int x, int y)   { return y * SIZE + x; }
+int xOf(int i)            { return i % SIZE; }
+int yOf(int i)            { return i / SIZE; }
+```
+
+**Start position**
+
+`startPos = 0` (top-left). A setter validates input range and falls back to `0` if out of bounds.
