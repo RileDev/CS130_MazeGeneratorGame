@@ -61,6 +61,6 @@ Other options you can explore later: Prim, Kruskal, Wilson, Aldous–Broder, Ell
 - `SIZE = 20` → grid is `SIZE × SIZE` (e.g., 20×20).
 - `visited[SIZE*SIZE] : bool` → flat, linear indices `0 … SIZE*SIZE-1`.
 - `walls[SIZE*SIZE][2] : bool` → store **only two openings per cell**:
-  `walls[i][0]` → opening to the right of cell `i`
-  `walls[i][1]` → opening down from cell `i`
-  Left/up openings are **implicit** from neighbors (saves memory and avoids duplication).
+  - `walls[i][0]` → opening to the right of cell `i`
+  - `walls[i][1]` → opening down from cell `i`
+  - Left/up openings are **implicit** from neighbors (saves memory and avoids duplication).
