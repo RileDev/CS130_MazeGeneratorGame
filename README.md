@@ -141,4 +141,37 @@ int yOf(int i)            { return i / SIZE; }
 
   * add **right** wall collider if on the outer edge or `!rightOpen(i, j)`
   * add **bottom** wall collider if on the outer edge or `!downOpen(i, j)`
-* Expose via `colliders()` so the player controller / AI / physics can use the same authoritative wall set as the renderer.
+* Expose via `colliders()` so the player controller / physics can use the same authoritative wall set as the renderer.
+
+---
+
+## Build & Run
+
+**Prerequisites**
+
+* `raylib` installed (or vendored)
+* C++17 or later (tested with `g++`/`clang++`)
+
+**Windows (MinGW/MSYS2)**
+
+```bash
+g++ -std=c++17 -O2 -I<path-to-raylib>/include -L<path-to-raylib>/lib \
+  src/main.cpp src/Maze.cpp src/Maze3D.cpp -o MazeEscapeGame \
+  -lraylib -lopengl32 -lgdi32 -lwinmm
+```
+
+**Linux**
+
+```bash
+g++ -std=c++17 -O2 src/main.cpp src/Maze.cpp src/Maze3D.cpp -o MazeEscapeGame \
+  -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+```
+
+**macOS**
+
+```bash
+clang++ -std=c++17 -O2 src/main.cpp src/Maze.cpp src/Maze3D.cpp -o MazeEscapeGame \
+  -lraylib -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
+```
+
+*If you keep assets like `brick.jpg`, place them under `assets/` and load with a relative path.*
