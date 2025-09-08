@@ -30,14 +30,17 @@ A fast, minimal **C++/raylib** project that generates a **perfect maze** using a
 ---
 
 ## Screenshots (Placeholders)
-- First-person gameplay (corridors & turns)  
-<img width="801" height="482" alt="Screenshot 2025-09-01 201011" src="https://github.com/user-attachments/assets/1dba9d6d-e471-4cbe-8895-13d85cc3c656" />
-- Top-down map with player marker  
+- First-person gameplay (corridors & turns)
 <img width="801" height="480" alt="Screenshot 2025-09-01 200733" src="https://github.com/user-attachments/assets/75a48bb8-4a16-447b-a578-21e3e169f8bf" />
-- **Win** screen  
-<img width="801" height="480" alt="Screenshot 2025-09-01 201539" src="https://github.com/user-attachments/assets/a9893640-6487-45b3-b9f1-9b75bc3e2a36" />
-- **Lose** screen
+
+- Top-down map with player marker
+<img width="801" height="482" alt="Screenshot 2025-09-01 201011" src="https://github.com/user-attachments/assets/1dba9d6d-e471-4cbe-8895-13d85cc3c656" />
+
+- **Win** screen
 <img width="803" height="479" alt="Screenshot 2025-09-01 201202" src="https://github.com/user-attachments/assets/763683ec-7c5a-4c79-b36c-a69baf76f010" />
+
+- **Lose** screen
+<img width="801" height="480" alt="Screenshot 2025-09-01 201539" src="https://github.com/user-attachments/assets/a9893640-6487-45b3-b9f1-9b75bc3e2a36" />
 
 ## Why DFS?
 
