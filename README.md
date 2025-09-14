@@ -161,7 +161,7 @@ int yOf(int i)            { return i / SIZE; }
 **Windows (MinGW/MSYS2)**
 
 ```bash
-g++ -std=c++17 -O2 -I<path-to-raylib>/include -L<path-to-raylib>/lib \
+g++ -std=c++17 -O2 -I/include -L/lib \
   src/main.cpp src/Maze.cpp src/Maze3D.cpp -o MazeEscapeGame \
   -lraylib -lopengl32 -lgdi32 -lwinmm
 ```
